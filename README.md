@@ -1,6 +1,6 @@
 # JOBE
 
-Version: 1.6.0+, 18 September 2019
+Version: 1.6.0, 28 January 2019
 
 
 Author: Richard Lobb, University of Canterbury, New Zealand
@@ -134,12 +134,14 @@ installed.
 On Ubuntu-16.04 or 18.04, a command to set up all the necessary web tools plus
 all currently-supported languages is the following:
 
-    sudo apt-get install apache2 php libapache2-mod-php php-cli\
-        php-mbstring octave nodejs git python3 build-essential default-jdk\
-        python3-pip fp-compiler pylint3 acl sudo sqlite3
+    sudo apt install apache2 php libapache2-mod-php php-cli\
+        php-mbstring octave nodejs git python3 build-essential openjdk-8-jre\
+        openjdk-8-jdk python3-pip fp-compiler pylint3 acl sudo sqlite3
 
-Octave, fp and pylint3 are required only if you need to run Octave or Pascal
-programs or test Python3 programs with pylint3, respectively.
+Octave, fp and pylint are required only if you need to run Octave or Pascal
+programs or test Python programs with pylint, respectively. Newer versions of
+openjdk are available on Ubuntu 18.04, so you may wish to replace the two
+openjdk-8 packages with their openjdk-11 equivalents.
 
 If you wish to use API-authentication, which is generally pointless when setting
 up a private Jobe server, you also need the following:
@@ -149,12 +151,6 @@ up a private Jobe server, you also need the following:
 Similar commands should work on other Debian-based Linux distributions,
 although some differences are inevitable (e.g.: acl is preinstalled in Ubuntu,
 whereas in debian it must be installed).
-
-A Raspberry Pi user reports that they additionally had to use the command
-
-    apt-get install --fix-missing
-
-which may help with broken installs on other systems, too.
 
 ### Setting pylint3 options (if you want pylint)
 
@@ -286,35 +282,6 @@ any client machine that is allowed to access the jobe server, edit the line
 
 to reference the JOBE_SERVER, e.g. by replacing *localhost* with its IP
 number, and re-run the tester with the same command from the client machine.
-
-## Using Jobe
-
-Usually Jobe is used as a server for Moodle CodeRunner questions. So once jobe
-has been installed and tested with `testsubmit.py` it can be used by CodeRunner
-questions by plugging the Jobe server hostname into the CodeRunner administrator
-settings, replacing the default value of `jobe2.cosc.canterbury.ac.nz`.
-
-However, Jobe can also be used standalone. The `testsubmit.py` program shows
-how it can be invoked from a Python client. There are also two other simpler
-clients provided in this repository: `simpletest.py` and `minimaltest.py`.
-Note that the POST request
-payload must a JSON object with a *run_spec* attribute as specified in the
-document *restapi.pdf*. For example, the following POST data runs the classic
-C "Hello World" program:
-
-    {"run_spec": {"language_id": "c", "sourcefilename": "test.c", "sourcecode": "\n#include <stdio.h>\n\nint main() {\n    printf(\"Hello world\\n\");\n}\n"}}
-
-The POST request must have the header
-
-    Content-type: application/json; charset-utf-8
-
-and should be sent to a URL like
-
-    localhost/jobe/index.php/restapi/runs
-
-For example, the following Linux `curl` command runs the C Hello World program:
-
-    curl -d '{"run_spec": {"language_id": "c", "sourcefilename": "test.c", "sourcecode": "\n#include <stdio.h>\n\nint main() {\n    printf(\"Hello world\\n\");\n}\n"}}' -H "Content-type: application/json; charset-utf-8"  localhost/jobe/index.php/restapi/runs
 
 ## Updating Jobe
 
