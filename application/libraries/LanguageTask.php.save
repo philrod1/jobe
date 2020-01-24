@@ -89,7 +89,7 @@ abstract class Task {
 
         log_message('debug', 'LanguageTask params = ' . implode(' ', $params));
         log_message('debug', 'LanguageTask input  = ' . $input);
-        log_message('debug', 'LanguageTask file   = ' . implode(' ', $filename));
+        log_message('debug', 'LanguageTask file   = ' . $filename);
         $this->cmpinfo = '';  // Optimism (always look on the bright side of life).
     }
 
@@ -108,7 +108,7 @@ abstract class Task {
     // server user is) and has access rights of 771. If it's readable by
     // any of the jobe<n> users, running programs will be able
     // to hoover up other students' submissions.
-    public function prepare_execution_environment($sourceCode) {
+    public function prepare_execution_environment($source) {
         // Create the temporary directory that will be used.
         $this->workdir = tempnam("/home/jobe/runs", "jobe_");
         if (!unlink($this->workdir) || !mkdir($this->workdir)) {
@@ -121,11 +121,9 @@ abstract class Task {
 
         // Save the source there.
         if (empty($this->sourceFileName)) {
-            $this->sourceFileName = array($this->defaultFileName($sourceCode));
+            $this->sourceFileName = $this->defaultFileName($sourceCode);
         }
-	for ($i = 0 ; $i < count($sourceCode) ; $i++) {
-	        file_put_contents($this->workdir . '/' . $this->sourceFileName[$i], $sourceCode[$i]);
-	}
+        file_put_contents($this->workdir . '/' . $this->sourceFileName, $sourceCode);
 
         // Allocate one of the Jobe users.
         $this->userId = $this->getFreeUser();
@@ -317,10 +315,8 @@ abstract class Task {
         exec('bash prog.cmd');
 
         $output = file_get_contents("$workdir/prog.out");
-	$output = substr($output, 0, 4000);
         if (file_exists("{$this->workdir}/prog.err")) {
             $stderr = file_get_contents("{$this->workdir}/prog.err");
-	    $stderr = substr($stderr, 0, 4000);
         } else {
             $stderr = '';
         }

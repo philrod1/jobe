@@ -28,11 +28,18 @@ class C_Task extends Task {
     }
 
     public function compile() {
-        $src = basename($this->sourceFileName);
-        $this->executableFileName = $execFileName = "$src.exe";
+        $src = "";
+	for ($x = 0 ; $x < count($this->sourceFileName) ; $x++) {
+		if(substr($this->sourceFileName[$x], -1 ) == "c") {
+			$src = $src . $this->sourceFileName[$x] . " ";
+		}
+	}
+        $this->executableFileName = $execFileName = "main.exe";
         $compileargs = $this->getParam('compileargs');
         $linkargs = $this->getParam('linkargs');
+        $linkargs[] = "-lm";
         $cmd = "gcc " . implode(' ', $compileargs) . " -o $execFileName $src " . implode(' ', $linkargs);
+	log_message('debug', $cmd);
         list($output, $this->cmpinfo) = $this->run_in_sandbox($cmd);
     }
 
